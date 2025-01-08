@@ -22,6 +22,27 @@ server.listen()
 
 # List For Clients and Their Nicknames
 clients = []
-ciknames = []
+nicknames = []
 
 
+#  --------------- Sending Messages to all connected clients ------------
+def broadcast(message):
+    for client in clients:
+        client.send(message)
+
+# Handling Messages from Clients
+def handle(client):
+    while True:
+        try:
+            # Broadcasting MEssage
+            message = client.recv(1024)
+            broadcast(message)
+        except:
+            # Removing and Closing Clients
+            index = clients.index(client)
+            clients.remove(client)
+            client.close()
+            nickname = nicknames[index]
+            broadcast(f'{nickname} left the chat!'.encode('ascii'))
+            nicknames.remove(nickname)
+            break
